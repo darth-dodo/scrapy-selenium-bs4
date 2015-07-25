@@ -1,6 +1,4 @@
 #urban dictionary homepage downloader
-
-
 import time
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -68,7 +66,7 @@ class UrbanDictScraper():
         print self.collection
 
         for i,items in enumerate(urban_data):
-            print urban_data[i]
+            # print urban_data[i]
             self.collection.update({"word":urban_data[i][0]},
                                        {"word" : urban_data[i][0]
                                         ,"meaning" : urban_data[i][1]
@@ -77,11 +75,13 @@ class UrbanDictScraper():
 
         # words_meanings = dict(zip(words, meanings))
 
-        # print (json.dumps(words_meanings, indent=4))
+    def jsonDump(urban_data):
+        with open('urban.json','w') as fl:
+            json.dumps(urban_data, fl)
 
-        def validURL(self,url):
-            if "urbandictionary.com" in url:
-                return True
+    def validURL(self,url):
+        if "urbandictionary.com" in url:
+            return True
 
 
 
@@ -108,11 +108,12 @@ if __name__ == '__main__':
 
     if (args.URL):
         input_url = args.URL
-        print 'valid url'
 
         #basic validation
         if(s_urban.validURL(input_url)):
             ready = True
+            print 'valid url'
+
         else:
             print r"Please enter a valid url from site ~\nhttp://www.urbandictionary.com"
 
@@ -125,6 +126,12 @@ if __name__ == '__main__':
     elif (ready == True):
         print 'Default page downs is 10.. Data from 10 page downs..'
         s_output = s_urban.contentGen(input_url)
+
+    elif (ready == False and args.pages):
+        pages = int(args.pages)
+        print 'homepage for ',pages,' pagedowns'
+        s_output = s_urban.contentGen("https://www.urbandictionary.com",pages)
+
 
     else:
         print 'Downloading data from urbandictionary homepage'
@@ -139,4 +146,7 @@ if __name__ == '__main__':
         print 'Data in default "Urbana" collection'
         s_urban.mongoColl(s_output)
 
+    if (args.output == 'json'):
+        print s_output
+        s_urban.jsonDump(s_output)
 
